@@ -48,5 +48,100 @@ print(Linear_Algebra._asdict())
 ('name', 'credits', 'time')
 Course(name='linear algebra', credits=4, time=('Tue', '13:30-15:05'))
 ('Tue', '13:30-15:05')
-{'name': 'linear algebra', 'credits': 4, 'time': ('Tue', '13:30-15:05')
+{'name': 'linear algebra', 'credits': 4, 'time': ('Tue', '13:30-15:05') }
+```
+
+## `collections.OrderedDict`
+众所周知，Python中的`dict`是基于hash table实现的（详细的机制可以浏览*Fluent Python*一书），这使得`dict`在实现高性能查找的同时，舍弃了有序性（Python3.6之前）。而`collections.OrderedDict`在添加键的时候会保持顺序，保证了键的迭代次序的一致性。
+
+其用法见以下代码：
+```python
+#! /usr/bin/python3
+from collections import OrderedDict
+
+print("Before deleting:")
+od = OrderedDict()
+od['a'] = 1
+od['b'] = 2
+od['c'] = 3
+od['d'] = 4
+od['e'] = 5
+od['f'] = 6
+
+for key, value in od.items():
+	print(key, value)
+
+print("After deleting:")
+od.pop('c') # 删除操作
+for key, value in od.items():
+	print(key, value)
+
+print("After re-inserting:")
+od['c'] = 3 # 赋值操作
+for key, value in od.items():
+	print(key, value)
+```
+运行结果如下：
+```
+Before deleting:
+a 1
+b 2
+c 3
+d 4
+e 5
+f 6
+After deleting:
+a 1
+b 2
+d 4
+e 5
+f 6
+After re-inserting:
+a 1
+b 2
+d 4
+e 5
+f 6
+c 3
+```
+
+可以看到，`OrderedDict`会根据放入元素的先后顺序进行排序。除此之外，`OrderedDict`和`dict`并无太大区别。
+
+> 注：在Python3.6及之后的版本，所有的普通`dict`都变为有序的了，故两者将无区别。
+
+## `collections.defaultdict`
+在使用字典时，如果访问字典中不存在的键值对，程序会报错，就像这样：
+```python
+GPAdict = {'A+':4.0,'A':4.0}
+print(GPAdict['A-'])
+```
+
+```
+Traceback (most recent call last):
+  File "/home/nullptr/open-source/advanced_python/1_advanced_data_structure/defaultdict_demo.py", line 2, in <module>
+    print(GPAdict['A-'])
+KeyError: 'A-'
+```
+而`collections.defaultdict`可以解决这一问题。它在创建时可以传入一个可调用对象（可以是一般函数，也可以是lambda函数等），作为字典中没有键时的默认选择。
+```python
+from collections import defaultdict
+
+GPAdict = defaultdict(lambda:4.0)
+GPAdict['A+'] = 4.0
+GPAdict['A'] = 4.0
+print(GPAdict['B+'])
+
+# 以下写法也可以
+'''
+def foo():
+    return 4.0
+GPAdict = defaultdict(foo)
+GPAdict['A+'] = 4.0
+GPAdict['A'] = 4.0
+print(GPAdict['B+'])
+'''
+```
+运行结果如下：
+```
+4.0
 ```
